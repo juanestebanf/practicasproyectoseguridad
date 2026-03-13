@@ -17,6 +17,9 @@ class AppRutas {
   static const String alertaCercana = '/alerta-cercana';
   static const String notificaciones = '/notificaciones';
   // roles
-  static const homeAdmin = '/home-admin';
-  static const homeVigilante = '/home-vigilante';
+  static const String homeAdmin = '/home-admin';
+  static const String homeVigilante = '/home-vigilante';
+  static const String operatorAlertDetail = '/operator-alert-detail';
+  static const String operatorHistory = '/operator-history';
+  static const String operatorProfile = '/operator-profile';
 }

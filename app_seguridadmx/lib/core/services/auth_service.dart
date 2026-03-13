@@ -3,7 +3,7 @@ class AuthService {
   static const _adminEmail = "admin@seguridadmx.com";
   static const _adminPass  = "Admin123";
 
-  static const _vigilanteEmail = "vigilante@seguridadmx.com";
+  static const _vigilanteEmail = "vigilante@gmail.com";
   static const _vigilantePass  = "Vigilante123";
 
   static Future<String?> login(String email, String password) async {
