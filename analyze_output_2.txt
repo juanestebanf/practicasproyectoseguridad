@@ -1,0 +1,109 @@
+Analyzing app_seguridadmx...                                    
+
+warning - The operand can't be 'null', so the condition is always 'true' - lib\core\services\contactos_phone_service.dart:21:29 - unnecessary_null_comparison
+warning - Dead code - lib\core\services\contactos_phone_service.dart:30:42 - dead_code
+warning - The left operand can't be null, so the right operand is never executed - lib\core\services\contactos_phone_service.dart:30:45 - dead_null_aware_expression
+warning - The left operand can't be null, so the right operand is never executed - lib\core\services\contactos_phone_service.dart:33:39 - dead_null_aware_expression
+   info - Don't invoke 'print' in production code - lib\core\services\contactos_phone_service.dart:39:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\core\services\contactos_phone_service.dart:45:7 - avoid_print
+   info - Empty catch block - lib\features\admin\presentacion\data\admin_fake_repository.dart:131:16 - empty_catches
+   info - The constant name 'en_progreso' isn't a lowerCamelCase identifier - lib\features\admin\presentacion\domain\models\alert_model.dart:5:3 - constant_identifier_names
+   info - The constant name 'autoridad_asignada' isn't a lowerCamelCase identifier - lib\features\admin\presentacion\domain\models\alert_model.dart:6:3 - constant_identifier_names
+   info - The constant name 'esperando_aprobacion' isn't a lowerCamelCase identifier - lib\features\admin\presentacion\domain\models\alert_model.dart:7:3 - constant_identifier_names
+warning - Unused import: '../widgets/admin_config_tile.dart' - lib\features\admin\presentacion\screens\admin_profile_screen.dart:5:8 - unused_import
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\admin\presentacion\screens\admin_profile_screen.dart:192:37 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\admin\presentacion\screens\admin_profile_screen.dart:194:56 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\admin\presentacion\screens\alert_detail_screen.dart:160:52 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\admin\presentacion\screens\alert_detail_screen.dart:198:57 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\admin\presentacion\screens\alert_detail_screen.dart:214:32 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\admin\presentacion\screens\alert_detail_screen.dart:216:51 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\admin\presentacion\screens\alert_detail_screen.dart:229:40 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\admin\presentacion\screens\alert_detail_screen.dart:244:56 - deprecated_member_use
+warning - This default clause is covered by the previous cases - lib\features\admin\presentacion\screens\alert_detail_screen.dart:279:7 - unreachable_switch_default
+warning - This default clause is covered by the previous cases - lib\features\admin\presentacion\screens\alert_detail_screen.dart:289:7 - unreachable_switch_default
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\admin\presentacion\screens\alert_detail_screen.dart:308:22 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\admin\presentacion\screens\alert_detail_screen.dart:310:41 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\admin\presentacion\screens\asignar_operador_screen.dart:87:41 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\admin\presentacion\screens\crear_operador_screen.dart:28:61 - deprecated_member_use
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\features\admin\presentacion\screens\crear_operador_screen.dart:159:19 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\admin\presentacion\screens\crear_operador_screen.dart:183:46 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\admin\presentacion\screens\historial_alertas_screen.dart:92:62 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\admin\presentacion\screens\historial_alertas_screen.dart:96:59 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\admin\presentacion\screens\historial_alertas_screen.dart:127:66 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\admin\presentacion\screens\historial_alertas_screen.dart:147:57 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\admin\presentacion\screens\operadores_screen.dart:74:40 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\admin\presentacion\screens\operadores_screen.dart:100:62 - deprecated_member_use
+   info - 'activeColor' is deprecated and shouldn't be used. Use activeThumbColor instead. This feature was deprecated after v3.31.0-2.0.pre - lib\features\admin\presentacion\screens\operadores_screen.dart:124:27 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\admin\presentacion\screens\operadores_screen.dart:125:55 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\admin\presentacion\widgets\admin_config_tile.dart:32:46 - deprecated_member_use
+   info - 'activeColor' is deprecated and shouldn't be used. Use activeThumbColor instead. This feature was deprecated after v3.31.0-2.0.pre - lib\features\admin\presentacion\widgets\admin_config_tile.dart:52:15 - deprecated_member_use
+   info - Don't invoke 'print' in production code - lib\features\admin\presentacion\widgets\alert_card_widget.dart:33:9 - avoid_print
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\admin\presentacion\widgets\alert_card_widget.dart:142:46 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\admin\presentacion\widgets\history_card_widget.dart:56:38 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\admin\presentacion\widgets\stat_card_widget.dart:27:50 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\auth\presentacion\pantalla_login_user.dart:108:51 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\auth\presentacion\screens\pantalla_bienvenida.dart:33:43 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\auth\presentacion\screens\pantalla_bienvenida.dart:87:33 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\auth\presentacion\screens\pantalla_bienvenida.dart:89:50 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\auth\presentacion\screens\pantalla_bienvenida.dart:92:35 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\auth\presentacion\screens\pantalla_bienvenida.dart:114:31 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\auth\presentacion\screens\pantalla_bienvenida.dart:139:29 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\auth\presentacion\screens\pantalla_bienvenida.dart:141:48 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\auth\presentacion\screens\pantalla_bienvenida.dart:194:35 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\auth\presentacion\screens\pantalla_bienvenida.dart:220:52 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\auth\presentacion\widgets\item_caracteristica.dart:23:22 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\auth\presentacion\widgets\item_caracteristica.dart:26:24 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\auth\presentacion\widgets\item_caracteristica.dart:35:28 - deprecated_member_use
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\features\operador\presentation\screens\operator_history_screen.dart:164:17 - deprecated_member_use
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\features\operador\presentation\screens\operator_history_screen.dart:197:17 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\operador\presentation\widgets\operator_alert_card.dart:204:22 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\operador\presentation\widgets\operator_history_card.dart:157:29 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\operador\presentation\widgets\operator_priority_badge.dart:47:22 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\operador\presentation\widgets\operator_priority_badge.dart:50:24 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\operador\presentation\widgets\operator_stat_card.dart:45:30 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\users\presentacion\screens\alerta_cercana_screen.dart:33:38 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\users\presentacion\screens\alerta_cercana_screen.dart:60:36 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\users\presentacion\screens\alerta_cercana_screen.dart:63:51 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\users\presentacion\screens\alerta_cercana_screen.dart:142:41 - deprecated_member_use
+warning - The value of the local variable 'cardColor' isn't used - lib\features\users\presentacion\screens\datos_personales_screen.dart:10:11 - unused_local_variable
+warning - The value of the field 'accentRed' isn't used - lib\features\users\presentacion\screens\gestionar_contactos_screen.dart:14:22 - unused_field
+warning - The value of the field 'backgroundDark' isn't used - lib\features\users\presentacion\screens\gestionar_contactos_screen.dart:15:22 - unused_field
+warning - The receiver can't be null, so the null-aware operator '?[' is unnecessary - lib\features\users\presentacion\screens\gestionar_contactos_screen.dart:26:26 - invalid_null_aware_operator
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\users\presentacion\screens\gestionar_contactos_screen.dart:40:48 - deprecated_member_use
+   info - Don't use 'BuildContext's across async gaps - lib\features\users\presentacion\screens\gestionar_contactos_screen.dart:130:37 - use_build_context_synchronously
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\users\presentacion\screens\gestionar_contactos_screen.dart:168:54 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\users\presentacion\screens\gestionar_contactos_screen.dart:229:60 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\users\presentacion\screens\gestionar_contactos_screen.dart:339:30 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\users\presentacion\screens\historial_alarmas_screen.dart:151:38 - deprecated_member_use
+warning - Unused import: 'package:app_seguridadmx/core/models/alerta_model.dart' - lib\features\users\presentacion\screens\mapa_screen.dart:7:8 - unused_import
+warning - Unused import: 'package:app_seguridadmx/features/users/presentacion/widgets/map_controls_widget.dart' - lib\features\users\presentacion\screens\mapa_screen.dart:8:8 - unused_import
+   info - Don't use 'BuildContext's across async gaps - lib\features\users\presentacion\screens\mapa_screen.dart:153:26 - use_build_context_synchronously
+warning - Unused import: 'alerta_cercana_screen.dart' - lib\features\users\presentacion\screens\notificaciones_screen.dart:5:8 - unused_import
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\users\presentacion\screens\perfil_usuario_screen.dart:77:36 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\users\presentacion\screens\perfil_usuario_screen.dart:80:40 - deprecated_member_use
+   info - 'activeColor' is deprecated and shouldn't be used. Use activeThumbColor instead. This feature was deprecated after v3.31.0-2.0.pre - lib\features\users\presentacion\screens\preferencias_notificacion_screen.dart:102:7 - deprecated_member_use
+   info - 'activeColor' is deprecated and shouldn't be used. Use activeThumbColor instead. This feature was deprecated after v3.31.0-2.0.pre - lib\features\users\presentacion\screens\seguridad_cuenta_screen.dart:55:9 - deprecated_member_use
+warning - Unused import: '../widgets/map_controls_widget.dart' - lib\features\users\presentacion\screens\seleccionar_alarma_screen.dart:4:8 - unused_import
+warning - Unused import: '../widgets/alerta_activa_card.dart' - lib\features\users\presentacion\screens\seleccionar_alarma_screen.dart:5:8 - unused_import
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\users\presentacion\screens\seleccionar_alarma_screen.dart:54:41 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\users\presentacion\screens\seleccionar_alarma_screen.dart:59:42 - deprecated_member_use
+   info - The private field _contactosSeleccionados could be 'final' - lib\features\users\presentacion\screens\seleccionar_contactos_screen.dart:23:30 - prefer_final_fields
+   info - Don't invoke 'print' in production code - lib\features\users\presentacion\screens\seleccionar_contactos_screen.dart:75:7 - avoid_print
+   info - Don't use 'BuildContext's across async gaps - lib\features\users\presentacion\screens\seleccionar_contactos_screen.dart:130:19 - use_build_context_synchronously
+warning - Unused import: '../screens/seleccionar_contactos_screen.dart' - lib\features\users\presentacion\widgets\acciones_rapidas_widget.dart:3:8 - unused_import
+warning - Unused import: 'package:app_seguridadmx/rutas/rutas_app.dart' - lib\features\users\presentacion\widgets\acciones_rapidas_widget.dart:4:8 - unused_import
+   info - Constructors for public widgets should have a named 'key' parameter - lib\features\users\presentacion\widgets\alerta_activa_card.dart:10:9 - use_key_in_widget_constructors
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\users\presentacion\widgets\alerta_activa_card.dart:27:35 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\users\presentacion\widgets\alerta_activa_card.dart:40:33 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\users\presentacion\widgets\alerta_card_widget.dart:29:32 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\users\presentacion\widgets\alerta_card_widget.dart:30:29 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\users\presentacion\widgets\alerta_historial_item.dart:47:50 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\users\presentacion\widgets\alerta_historial_item.dart:55:35 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\users\presentacion\widgets\alerta_historial_item.dart:114:45 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\users\presentacion\widgets\alerta_historial_item.dart:133:26 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\users\presentacion\widgets\alerta_historial_item.dart:134:27 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\users\presentacion\widgets\boton_sos_widget.dart:28:36 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\users\presentacion\widgets\contacto_item_widget.dart:29:41 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\users\presentacion\widgets\contacto_item_widget.dart:56:29 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\users\presentacion\widgets\opcion_alarma_card.dart:48:31 - deprecated_member_use
+
