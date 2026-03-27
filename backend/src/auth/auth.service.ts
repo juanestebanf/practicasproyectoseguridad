@@ -41,6 +41,16 @@ export class AuthService {
     };
   }
 
+  async checkEmailExists(email: string): Promise<boolean> {
+    const user = await this.usersService.findByEmail(email);
+    return !!user;
+  }
+
+  async checkCedulaExists(cedula: string): Promise<boolean> {
+    const user = await this.usersService.findByCedula(cedula);
+    return !!user;
+  }
+
   async forgotPassword(email: string) {
     const user = await this.usersService.findByEmail(email);
     if (!user) {

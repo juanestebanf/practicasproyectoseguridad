@@ -29,11 +29,63 @@ class AuthService {
     }
   }
 
-  static Future<bool> register({required String nombre, required String cedula, required String email, required String telefono, required String password, String? rol}) async {
+  /// Check if an email is already registered
+  static Future<bool> isEmailRegistered(String email) async {
     try {
-      if (cedula.isNotEmpty && cedula.length != 11) {
-        throw Exception('La cédula debe tener exactamente 11 dígitos');
+      final response = await _apiClient.dio.post(
+        ApiEndpoints.checkEmail,
+        data: {'email': email},
+      );
+      return response.data['exists'] == true;
+    } on DioException catch (e) {
+      // If endpoint doesn't exist, try to check during registration
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /// Check if a cédula is already registered
+  static Future<bool> isCedulaRegistered(String cedula) async {
+    try {
+      final response = await _apiClient.dio.post(
+        ApiEndpoints.checkCedula,
+        data: {'cedula': cedula},
+      );
+      return response.data['exists'] == true;
+    } on DioException catch (e) {
+      // If endpoint doesn't exist, try to check during registration
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  static Future<bool> register({
+    required String nombre, 
+    required String cedula, 
+    required String email, 
+    required String telefono, 
+    required String password, 
+    String? rol,
+    bool checkDuplicates = true,
+  }) async {
+    try {
+      // Check for duplicates if enabled
+      if (checkDuplicates) {
+        if (cedula.isNotEmpty) {
+          final cedulaExists = await isCedulaRegistered(cedula);
+          if (cedulaExists) {
+            throw Exception('Esta cédula ya está registrada');
+          }
+        }
+        
+        final emailExists = await isEmailRegistered(email);
+        if (emailExists) {
+          throw Exception('Este correo electrónico ya está registrado');
+        }
       }
+
       final Map<String, dynamic> requestData = {
         'nombre': nombre,
         'cedula': cedula.isNotEmpty ? cedula : null,

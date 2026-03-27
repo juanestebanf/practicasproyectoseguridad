@@ -21,6 +21,20 @@ export class AuthController {
     return this.authService.register(registerDto);
   }
 
+  @ApiOperation({ summary: 'Verificar si el email ya existe' })
+  @Post('check-email')
+  async checkEmail(@Body() body: { email: string }) {
+    const exists = await this.authService.checkEmailExists(body.email);
+    return { exists };
+  }
+
+  @ApiOperation({ summary: 'Verificar si la cédula ya existe' })
+  @Post('check-cedula')
+  async checkCedula(@Body() body: { cedula: string }) {
+    const exists = await this.authService.checkCedulaExists(body.cedula);
+    return { exists };
+  }
+
   @ApiOperation({ summary: 'Solicitar recuperación de contraseña' })
   @Post('forgot-password')
   async forgotPassword(@Body() forgotDto: any) {

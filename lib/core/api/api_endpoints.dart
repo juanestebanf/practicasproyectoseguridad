@@ -8,6 +8,8 @@ class ApiEndpoints {
   static const String register = '/auth/register';
   static const String forgotPassword = '/auth/forgot-password';
   static const String resetPassword = '/auth/reset-password';
+  static const String checkEmail = '/auth/check-email';
+  static const String checkCedula = '/auth/check-cedula';
   
   // Alerts
   static const String alerts = '/alerts';

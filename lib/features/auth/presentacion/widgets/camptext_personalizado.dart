@@ -9,6 +9,7 @@ class CampoTextoPersonalizado extends StatelessWidget {
   final bool esPassword;
   final Widget? suffixIcon;
   final String? Function(String?)? validator;
+  final TextInputType? keyboardType;
 
   const CampoTextoPersonalizado({
     super.key,
@@ -19,6 +20,7 @@ class CampoTextoPersonalizado extends StatelessWidget {
     this.esPassword = false,
     this.suffixIcon,
     this.validator,
+    this.keyboardType,
   });
 
   @override
@@ -38,6 +40,7 @@ class CampoTextoPersonalizado extends StatelessWidget {
         TextFormField(
           controller: controller,
           obscureText: esPassword,
+          keyboardType: keyboardType,
           style: TextStyle(color: ColoresApp.textoBlanco),
           validator: validator,
           decoration: InputDecoration(

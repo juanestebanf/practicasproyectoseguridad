@@ -31,6 +31,13 @@ export class UsersService {
     });
   }
 
+  async findByCedula(cedula: string): Promise<User | null> {
+    return this.usersRepository.findOne({
+      where: { cedula: cedula },
+      select: ['id', 'email', 'password', 'nombre', 'rol', 'cedula', 'active'],
+    });
+  }
+
   async findAll(rol?: string): Promise<User[]> {
     const whereCondition = rol ? { rol: rol as any } : {};
     return this.usersRepository.find({

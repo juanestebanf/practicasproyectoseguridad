@@ -3,6 +3,7 @@ import 'package:app_seguridadmx/app/tema/colors_app.dart';
 import '../widgets/camptext_personalizado.dart';
 import 'package:app_seguridadmx/features/auth/presentacion/widgets/custom_snackbar.dart';
 import 'package:app_seguridadmx/core/services/auth_service.dart';
+import 'package:app_seguridadmx/core/utils/validators.dart';
 
 class RegistroUsuarioScreen extends StatefulWidget {
   const RegistroUsuarioScreen({super.key});
@@ -55,6 +56,7 @@ class _RegistroUsuarioScreenState extends State<RegistroUsuarioScreen> {
         email: _correoController.text.trim(),
         telefono: _telefonoController.text.trim(),
         password: _passwordController.text.trim(),
+        checkDuplicates: true,
       );
 
       if (!mounted) return;
@@ -116,15 +118,12 @@ class _RegistroUsuarioScreenState extends State<RegistroUsuarioScreen> {
               ),
 
               CampoTextoPersonalizado(
-                label: 'CÉDULA',
-                hint: '110XXXXXXXXX',
+                label: 'CÉDULA / RUC',
+                hint: 'Ej: 1710034065 o 1791234567001',
                 icono: Icons.badge_outlined,
                 controller: _cedulaController,
-                validator: (value) {
-                  if (value == null || value.isEmpty) return 'Ingrese su cédula';
-                  if (value.trim().length != 11) return 'La cédula debe tener 11 dígitos';
-                  return null;
-                },
+                keyboardType: TextInputType.number,
+                validator: validarCedulaORuc,
               ),
 
               CampoTextoPersonalizado(
@@ -132,10 +131,8 @@ class _RegistroUsuarioScreenState extends State<RegistroUsuarioScreen> {
                 hint: 'correo@ejemplo.com',
                 icono: Icons.email_outlined,
                 controller: _correoController,
-                validator: (value) {
-                  if (value == null || value.isEmpty) return 'Ingrese su correo';
-                  return null;
-                },
+                keyboardType: TextInputType.emailAddress,
+                validator: validarEmail,
               ),
 
               CampoTextoPersonalizado(
@@ -143,8 +140,8 @@ class _RegistroUsuarioScreenState extends State<RegistroUsuarioScreen> {
                 hint: '09XXXXXXXX',
                 icono: Icons.phone_android_outlined,
                 controller: _telefonoController,
-                validator: (value) =>
-                    value!.isEmpty ? 'Ingrese su teléfono' : null,
+                keyboardType: TextInputType.phone,
+                validator: validarTelefono,
               ),
 
               CampoTextoPersonalizado(
@@ -165,13 +162,7 @@ class _RegistroUsuarioScreenState extends State<RegistroUsuarioScreen> {
                     });
                   },
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) return 'Ingrese una contraseña';
-                  if (value.length < 6) return 'Mínimo 6 caracteres requeridos';
-                  if (!RegExp(r'(?=.*[A-Z])').hasMatch(value)) return 'Debe contener al menos una mayúscula';
-                  if (!RegExp(r'(?=.*\d)').hasMatch(value)) return 'Debe contener al menos un número';
-                  return null;
-                },
+                validator: validarPassword,
               ),
 
               CampoTextoPersonalizado(
