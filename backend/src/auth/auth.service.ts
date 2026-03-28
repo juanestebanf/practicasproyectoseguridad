@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -28,6 +28,20 @@ export class AuthService {
   }
 
   async register(userData: any) {
+    // Check if email already exists
+    const existingEmail = await this.usersService.findByEmail(userData.email);
+    if (existingEmail && existingEmail.email === userData.email) {
+      throw new ConflictException('El correo electrónico ya está registrado');
+    }
+
+    // Check if cedula already exists
+    if (userData.cedula) {
+      const existingCedula = await this.usersService.findByCedula(userData.cedula);
+      if (existingCedula) {
+        throw new ConflictException('La cédula/RUC ya está registrada');
+      }
+    }
+
     const user = await this.usersService.create(userData);
     const payload = { sub: user.id, email: user.email, rol: user.rol };
     return {

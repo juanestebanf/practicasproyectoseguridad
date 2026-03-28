@@ -37,17 +37,19 @@ class OperatorAlertModel {
 
   factory OperatorAlertModel.fromJson(Map<String, dynamic> json) {
     return OperatorAlertModel(
-      id: json['id'],
-      titulo: json['titulo'],
-      descripcion: json['descripcion'],
-      prioridad: json['prioridad'],
-      estado: json['estado'],
-      ubicacion: json['ubicacion'],
+      id: json['id']?.toString() ?? '',
+      titulo: json['titulo'] ?? 'Sin título',
+      descripcion: json['descripcion'] ?? 'Sin descripción',
+      prioridad: json['prioridad'] ?? 'BAJA',
+      estado: json['estado'] ?? 'pendiente',
+      ubicacion: json['ubicacion'] ?? 'Ubicación no disponible',
       fecha: json['fecha'] != null ? DateTime.parse(json['fecha']) : DateTime.now(),
-      ciudadano: json['ciudadano'] != null ? json['ciudadano']['nombre'] : 'Desconocido',
-      lat: (json['lat'] as num).toDouble(),
-      lng: (json['lng'] as num).toDouble(),
-      operadorAsignado: json['operador'] != null ? json['operador']['id'] : null,
+      ciudadano: (json['ciudadano'] != null && json['ciudadano']['nombre'] != null) 
+          ? json['ciudadano']['nombre'] 
+          : 'Desconocido',
+      lat: (json['lat'] as num?)?.toDouble() ?? 0.0,
+      lng: (json['lng'] as num?)?.toDouble() ?? 0.0,
+      operadorAsignado: json['operador'] != null ? json['operador']['id']?.toString() : null,
       autoridadAsignada: json['autoridad'] != null ? json['autoridad']['nombre'] : null,
       reporteFinal: json['reporte_file_path'],
       reporteTexto: json['reporte_texto'],

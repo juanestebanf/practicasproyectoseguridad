@@ -256,7 +256,7 @@ class _GestionarContactosScreenState extends State<GestionarContactosScreen> {
               controller: nombreController,
               label: 'Nombre Completo',
               icon: Icons.person_outline,
-              validator: (v) => v!.isEmpty ? 'Ingresa un nombre' : null,
+              validator: (v) => (v ?? '').isEmpty ? 'Ingresa un nombre' : null,
             ),
             const SizedBox(height: 15),
             _buildTextField(
@@ -265,7 +265,7 @@ class _GestionarContactosScreenState extends State<GestionarContactosScreen> {
               icon: Icons.phone_android_outlined,
               keyboardType: TextInputType.phone,
               validator: (v) =>
-                  v!.length < 7 ? 'Número no válido' : null,
+                  (v ?? '').length < 7 ? 'Número no válido' : null,
             ),
           ]),
         ),
@@ -289,7 +289,8 @@ class _GestionarContactosScreenState extends State<GestionarContactosScreen> {
                   elevation: 0,
                 ),
                 onPressed: () async {
-                  if (formKey.currentState!.validate()) {
+                  final currentState = formKey.currentState;
+                  if (currentState != null && currentState.validate()) {
                     final nombre = nombreController.text.trim();
                     final partes = nombre.split(' ');
                     final iniciales = partes.length >= 2
@@ -308,7 +309,7 @@ class _GestionarContactosScreenState extends State<GestionarContactosScreen> {
                     try {
                       if (esEdicion && contactoEditar?['id'] != null) {
                         await ContactosStorageService.actualizarContacto(
-                            contactoEditar!['id'].toString(),
+                            contactoEditar?['id']?.toString() ?? '',
                             nuevoContacto);
                       } else {
                         await ContactosStorageService.agregarContacto(

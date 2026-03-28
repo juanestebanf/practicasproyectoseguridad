@@ -147,8 +147,8 @@ class _OperatorAlertDetailScreenState extends State<OperatorAlertDetailScreen> {
 
   Future<void> _pickPDF() async {
     final result = await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['pdf']);
-    if (result != null) {
-      _uploadFile(File(result.files.single.path!));
+    if (result != null && result.files.isNotEmpty && result.files.first.path != null) {
+      _uploadFile(File(result.files.first.path!));
     }
   }
 
@@ -172,6 +172,30 @@ class _OperatorAlertDetailScreenState extends State<OperatorAlertDetailScreen> {
       return const Scaffold(
         backgroundColor: ColoresApp.fondoOscuro,
         body: Center(child: CircularProgressIndicator(color: ColoresApp.rojoPrincipal)),
+      );
+    }
+
+    if (_alert == null) {
+      return Scaffold(
+        backgroundColor: ColoresApp.fondoOscuro,
+        appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline, color: Colors.redAccent, size: 60),
+              const SizedBox(height: 16),
+              const Text("Error al cargar la alerta", style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              const Text("Es posible que la alerta ya no exista o haya un problema de conexión.", style: TextStyle(color: Colors.white38, fontSize: 13), textAlign: TextAlign.center),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text("VOLVER"),
+              ),
+            ],
+          ),
+        ),
       );
     }
 

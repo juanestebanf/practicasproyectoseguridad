@@ -3,6 +3,11 @@ import 'package:app_seguridadmx/app/tema/colors_app.dart';
 import 'package:app_seguridadmx/rutas/rutas_app.dart';
 import 'package:app_seguridadmx/features/admin/presentacion/data/admin_repository.dart';
 import 'package:app_seguridadmx/features/admin/presentacion/domain/models/admin_stats_model.dart';
+import 'package:app_seguridadmx/app/widgets/avatar_selection_dialog.dart';
+import 'package:app_seguridadmx/core/services/user_service.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:convert';
+import 'dart:io';
 import '../widgets/admin_section_label.dart';
 import '../widgets/admin_stat_box.dart';
 import '../widgets/admin_session_card.dart';
@@ -21,6 +26,7 @@ class _AdminProfileScreenState extends State<AdminProfileScreen> {
   AdminStatsModel? stats;
   bool _isLoading = true;
   final DateTime _startTime = DateTime.now();
+  final ImagePicker _picker = ImagePicker();
 
   @override
   void initState() {
@@ -39,6 +45,71 @@ class _AdminProfileScreenState extends State<AdminProfileScreen> {
         stats = statsData;
         _isLoading = false;
       });
+    }
+  }
+
+  Future<void> _cambiarFoto() async {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: cardColor,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (context) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            leading: const Icon(Icons.photo_camera, color: Colors.white),
+            title: const Text("Tomar Foto", style: TextStyle(color: Colors.white)),
+            onTap: () {
+              Navigator.pop(context);
+              _pickImage(ImageSource.camera);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.photo_library, color: Colors.white),
+            title: const Text("Seleccionar de Galería", style: TextStyle(color: Colors.white)),
+            onTap: () {
+              Navigator.pop(context);
+              _pickImage(ImageSource.gallery);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.face, color: Colors.white),
+            title: const Text("Seleccionar Avatar", style: TextStyle(color: Colors.white)),
+            onTap: () async {
+              Navigator.pop(context);
+              final result = await showDialog<String>(
+                context: context,
+                builder: (context) => const AvatarSelectionDialog(),
+              );
+              if (result != null) {
+                _updatePhoto(result);
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    final XFile? image = await _picker.pickImage(source: source, maxWidth: 300, maxHeight: 300, imageQuality: 70);
+    if (image != null) {
+      final bytes = await File(image.path).readAsBytes();
+      final base64Image = "data:image/png;base64,${base64Encode(bytes)}";
+      _updatePhoto(base64Image);
+    }
+  }
+
+  Future<void> _updatePhoto(String photoData) async {
+    setState(() => _isLoading = true);
+    try {
+      await UserService.updateProfile({'foto': photoData});
+      _loadAll();
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+      }
     }
   }
 
@@ -136,31 +207,11 @@ class _AdminProfileScreenState extends State<AdminProfileScreen> {
           children: [
             const SizedBox(height: 10),
             Center(
-              child: Stack(
-                alignment: Alignment.bottomRight,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: accentRed, width: 2),
-                    ),
-                    child: Center(
-                      child: AdminProfileAvatarWidget(
-                        imageUrl: adminProfile!["avatarUrl"] ?? "https://ui-avatars.com/api/?name=${adminProfile!['nombre']}&background=E63946&color=fff",
-                      ),
-                    ),
-                  ),
-                  Container(
-                    height: 25,
-                    width: 25,
-                    decoration: BoxDecoration(
-                      color: Colors.green,
-                      shape: BoxShape.circle,
-                      border: Border.all(color: backgroundDark, width: 3),
-                    ),
-                  ),
-                ],
+              child: GestureDetector(
+                onTap: _cambiarFoto,
+                child: AdminProfileAvatarWidget(
+                  imageUrl: adminProfile!["foto"] ?? adminProfile!["avatarUrl"],
+                ),
               ),
             ),
 

@@ -25,15 +25,15 @@ class AlertaModel {
 
   factory AlertaModel.fromJson(Map<String, dynamic> json) {
     return AlertaModel(
-      id: json['id'],
-      tipoEmergencia: json['titulo'],
-      tipoAlerta: "Alarma Pública", // Default or map from backend if needed
-      sector: json['ubicacion'],
-      distancia: 0.0, // Calculate client-side if needed
-      fecha: DateTime.parse(json['fecha']),
-      lat: (json['lat'] as num).toDouble(),
-      lng: (json['lng'] as num).toDouble(),
-      estado: json['estado'],
+      id: json['id']?.toString() ?? '',
+      tipoEmergencia: json['titulo'] ?? 'Sin título',
+      tipoAlerta: "Alarma Pública", 
+      sector: json['ubicacion'] ?? 'Sector no disponible',
+      distancia: 0.0,
+      fecha: json['fecha'] != null ? DateTime.parse(json['fecha']) : DateTime.now(),
+      lat: (json['lat'] as num?)?.toDouble() ?? 0.0,
+      lng: (json['lng'] as num?)?.toDouble() ?? 0.0,
+      estado: json['estado'] ?? 'emitida',
     );
   }
 

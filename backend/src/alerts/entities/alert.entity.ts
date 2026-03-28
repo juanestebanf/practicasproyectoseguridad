@@ -44,13 +44,22 @@ export class Alert {
   @CreateDateColumn()
   fecha: Date;
 
+  @Column({ name: 'ciudadano_id' })
+  ciudadano_id: string;
+
   @ManyToOne(() => User, (user) => user.alerts)
   @JoinColumn({ name: 'ciudadano_id' })
   ciudadano: User;
 
+  @Column({ name: 'operador_id', nullable: true })
+  operador_id: string;
+
   @ManyToOne(() => User, (user) => user.alerts, { nullable: true })
   @JoinColumn({ name: 'operador_id' })
   operador: User;
+
+  @Column({ name: 'autoridad_id', nullable: true })
+  autoridad_id: string;
 
   @ManyToOne(() => Authority, { nullable: true })
   @JoinColumn({ name: 'autoridad_id' })

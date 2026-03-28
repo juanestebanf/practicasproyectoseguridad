@@ -181,7 +181,9 @@ class _MapaScreenState extends State<MapaScreen> {
   Future<void> cancelarAlerta() async {
     if (currentAlertId == null) return;
     
-    await _alertaService.cancelarAlerta(currentAlertId!);
+    if (currentAlertId != null) {
+      await _alertaService.cancelarAlerta(currentAlertId!);
+    }
     _detenerTimer();
 
     setState(() {

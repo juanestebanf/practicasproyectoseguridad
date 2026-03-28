@@ -47,6 +47,9 @@ export class User {
   @Column({ type: 'float', nullable: true })
   lng: number;
 
+  @Column({ nullable: true })
+  foto: string;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 

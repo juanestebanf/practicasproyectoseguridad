@@ -27,14 +27,14 @@ export class UsersService {
         { email: identifier },
         { cedula: identifier }
       ],
-      select: ['id', 'email', 'password', 'nombre', 'rol', 'active'],
+      select: ['id', 'email', 'password', 'nombre', 'rol', 'active', 'foto'],
     });
   }
 
   async findByCedula(cedula: string): Promise<User | null> {
     return this.usersRepository.findOne({
       where: { cedula: cedula },
-      select: ['id', 'email', 'password', 'nombre', 'rol', 'cedula', 'active'],
+      select: ['id', 'email', 'password', 'nombre', 'rol', 'cedula', 'active', 'foto'],
     });
   }
 
@@ -42,7 +42,7 @@ export class UsersService {
     const whereCondition = rol ? { rol: rol as any } : {};
     return this.usersRepository.find({
       where: whereCondition,
-      select: ['id', 'nombre', 'email', 'rol', 'telefono', 'active'],
+      select: ['id', 'nombre', 'email', 'rol', 'telefono', 'active', 'foto'],
     });
   }
 

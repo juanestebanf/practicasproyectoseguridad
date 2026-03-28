@@ -23,16 +23,16 @@ class SocketService {
       'autoConnect': true,
     });
 
-    socket!.onConnect((_) {
+    socket?.onConnect((_) {
       print('Socket conectado con éxito');
     });
 
-    socket!.on('new_alert', (data) {
+    socket?.on('new_alert', (data) {
       print('¡Nueva alerta recibida vía Socket!: $data');
       _alertController.add(Map<String, dynamic>.from(data));
     });
 
-    socket!.onDisconnect((_) => print('Socket desconectado'));
+    socket?.onDisconnect((_) => print('Socket desconectado'));
   }
 
   void disconnect() {

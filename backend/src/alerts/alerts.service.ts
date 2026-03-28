@@ -23,13 +23,13 @@ export class AlertsService {
       ubicacion: createAlertDto.ubicacion,
       lat: createAlertDto.lat,
       lng: createAlertDto.lng,
-      ciudadano: { id: user.userId } as any,
+      ciudadano_id: user.userId,
     });
 
     // AUTO-ASIGNACIÓN POR PROXIMIDAD
     const nearestOperator = await this.findNearestOperator(createAlertDto.lat, createAlertDto.lng);
     if (nearestOperator) {
-      alert.operador = nearestOperator;
+      alert.operador_id = nearestOperator.id;
       alert.estado = AlertStatus.EN_PROGRESO;
     }
 
@@ -92,11 +92,11 @@ export class AlertsService {
   }
 
   async acceptAlert(alertId: string, operatorId: string): Promise<Alert> {
-    const alert = await this.alertsRepository.findOne({ where: { id: alertId } });
-    if (!alert) throw new NotFoundException('Alerta no encontrada');
-    alert.operador = { id: operatorId } as any;
-    alert.estado = AlertStatus.EN_PROGRESO;
-    return this.alertsRepository.save(alert);
+    await this.alertsRepository.update(alertId, {
+      operador_id: operatorId,
+      estado: AlertStatus.EN_PROGRESO,
+    });
+    return this.findOne(alertId);
   }
 
   async findAllActive(): Promise<Alert[]> {
@@ -123,7 +123,7 @@ export class AlertsService {
 
   async findByOperator(operatorId: string): Promise<Alert[]> {
     return this.alertsRepository.find({
-      where: { operador: { id: operatorId } },
+      where: { operador_id: operatorId },
       relations: ['ciudadano'],
     });
   }
@@ -136,11 +136,11 @@ export class AlertsService {
   }
 
   async assignOperator(alertId: string, operatorId: string): Promise<Alert> {
-    const alert = await this.alertsRepository.findOne({ where: { id: alertId } });
-    if (!alert) throw new NotFoundException('Alerta no encontrada');
-    alert.operador = { id: operatorId } as any;
-    alert.estado = AlertStatus.EN_PROGRESO;
-    return this.alertsRepository.save(alert);
+    await this.alertsRepository.update(alertId, {
+      operador_id: operatorId,
+      estado: AlertStatus.EN_PROGRESO,
+    });
+    return this.findOne(alertId);
   }
 
   async uploadReport(alertId: string, filePath: string): Promise<Alert> {
@@ -152,11 +152,11 @@ export class AlertsService {
   }
 
   async finalizeWithReport(alertId: string, report: string): Promise<Alert> {
-    const alert = await this.alertsRepository.findOne({ where: { id: alertId } });
-    if (!alert) throw new NotFoundException('Alerta no encontrada');
-    alert.reporte_texto = report;
-    alert.estado = AlertStatus.ESPERANDO_APROBACION;
-    return this.alertsRepository.save(alert);
+    await this.alertsRepository.update(alertId, {
+      reporte_texto: report,
+      estado: AlertStatus.ESPERANDO_APROBACION,
+    });
+    return this.findOne(alertId);
   }
 
   async approveReport(alertId: string): Promise<Alert> {
@@ -175,11 +175,11 @@ export class AlertsService {
   }
 
   async assignAuthority(alertId: string, authorityId: string): Promise<Alert> {
-    const alert = await this.alertsRepository.findOne({ where: { id: alertId } });
-    if (!alert) throw new NotFoundException('Alerta no encontrada');
-    alert.autoridad = { id: authorityId } as any;
-    alert.estado = AlertStatus.AUTORIDAD_ASIGNADA;
-    return this.alertsRepository.save(alert);
+    await this.alertsRepository.update(alertId, {
+      autoridad_id: authorityId,
+      estado: AlertStatus.AUTORIDAD_ASIGNADA,
+    });
+    return this.findOne(alertId);
   }
 
   async uploadEvidence(alertId: string, filePath: string, fileType: string): Promise<Evidence> {
@@ -215,10 +215,10 @@ export class AlertsService {
 
   async getOperatorStats(operatorId: string): Promise<any> {
     const totalAssigned = await this.alertsRepository.count({
-      where: { operador: { id: operatorId } }
+      where: { operador_id: operatorId }
     });
     const finalized = await this.alertsRepository.count({
-      where: { operador: { id: operatorId }, estado: AlertStatus.FINALIZADA }
+      where: { operador_id: operatorId, estado: AlertStatus.FINALIZADA }
     });
 
     // Eficiencia simple: % de alertas finalizadas sobre total asignadas

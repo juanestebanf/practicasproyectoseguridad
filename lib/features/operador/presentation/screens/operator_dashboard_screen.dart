@@ -69,10 +69,32 @@ class _OperatorDashboardScreenState extends State<OperatorDashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_loading || _operator == null) {
+    if (_loading) {
       return const Scaffold(
         backgroundColor: ColoresApp.fondoOscuro,
         body: Center(child: CircularProgressIndicator(color: ColoresApp.rojoPrincipal)),
+      );
+    }
+
+    if (_operator == null) {
+       return Scaffold(
+        backgroundColor: ColoresApp.fondoOscuro,
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline, color: Colors.orangeAccent, size: 50),
+              const SizedBox(height: 16),
+              const Text("Error al cargar perfil", style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: _loadData,
+                child: const Text("REINTENTAR"),
+              ),
+            ],
+          ),
+        ),
+        bottomNavigationBar: const OperatorBottomNavWidget(currentIndex: 0),
       );
     }
 

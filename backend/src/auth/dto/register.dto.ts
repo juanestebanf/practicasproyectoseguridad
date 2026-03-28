@@ -1,5 +1,6 @@
-import { IsString, MinLength, IsOptional, IsEnum, Matches, Length } from 'class-validator';
+import { IsString, MinLength, IsOptional, IsEnum, Matches } from 'class-validator';
 import { UserRole } from '../../users/entities/user.entity';
+import { IsEcuadorianId } from '../../common/validators/ecuadorian-id.validator';
 
 export class RegisterDto {
   @IsString({ message: 'El nombre debe ser una cadena de texto' })
@@ -9,14 +10,15 @@ export class RegisterDto {
   email: string;
 
   @IsString()
-  @MinLength(6, { message: 'La contraseña debe tener al menos 6 caracteres' })
-  @Matches(/(?=.*[A-Z])/, { message: 'La contraseña debe contener al menos una mayúscula' })
-  @Matches(/(?=.*\d)/, { message: 'La contraseña debe contener al menos un número' })
+  @MinLength(6, { message: 'Mínimo 6 caracteres' })
+  @Matches(/(?=.*[A-Z])/, { message: 'Debe incluir al menos una MAYÚSCULA' })
+  @Matches(/(?=.*[a-z])/, { message: 'Debe incluir al menos una minúscula' })
+  @Matches(/(?=.*\d)/, { message: 'Debe incluir al menos un número' })
   password: string;
 
   @IsOptional()
   @IsString()
-  @Length(11, 11, { message: 'La cédula debe tener exactamente 11 dígitos' })
+  @IsEcuadorianId({ message: 'Cédula o RUC ecuatoriano inválido' })
   cedula?: string;
 
   @IsOptional()

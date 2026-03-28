@@ -39,6 +39,7 @@ class OperatorRepository {
         id: userId,
         nombre: userData['nombre'] ?? "Operador",
         rol: userData['rol'] ?? "Operador",
+        foto: userData['foto'],
         estadisticas: OperatorStats(
           alertasAtendidasHoy: attendedToday,
           eficiencia: eficiencia > 0 ? eficiencia : 100.0, // Fallback professional

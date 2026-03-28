@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:app_seguridadmx/app/tema/colors_app.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:app_seguridadmx/features/auth/presentacion/widgets/camptext_personalizado.dart';
 import 'package:app_seguridadmx/features/auth/presentacion/widgets/custom_snackbar.dart';
 import 'package:app_seguridadmx/rutas/rutas_app.dart';
@@ -20,6 +21,13 @@ class _LoginUsuarioScreenState extends State<LoginUsuarioScreen> {
 
   bool _obscurePassword = true;
   bool _isLoading = false;
+  bool _rememberMe = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRememberedUser();
+  }
 
   @override
   void dispose() {
@@ -28,20 +36,37 @@ class _LoginUsuarioScreenState extends State<LoginUsuarioScreen> {
     super.dispose();
   }
 
+  Future<void> _loadRememberedUser() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedUser = prefs.getString('remembered_user');
+    if (savedUser != null) {
+      setState(() {
+        _identificacionController.text = savedUser;
+        _rememberMe = true;
+      });
+    }
+  }
 
   /// 🔹 LOGIN
   Future<void> _iniciarSesion() async {
-    if (!_formKey.currentState!.validate()) return;
+    final currentState = _formKey.currentState;
+    if (currentState == null || !currentState.validate()) return;
 
     final email = _identificacionController.text.trim();
     final password = _passwordController.text.trim();
 
-    setState(() {
-      _isLoading = true;
-    });
+    setState(() => _isLoading = true);
 
     try {
       final rol = await AuthService.login(email, password);
+      
+      // Guardar identificación si rememberMe está activo
+      final prefs = await SharedPreferences.getInstance();
+      if (_rememberMe) {
+        await prefs.setString('remembered_user', email);
+      } else {
+        await prefs.remove('remembered_user');
+      }
 
       if (!mounted) return;
 
@@ -152,6 +177,8 @@ class _LoginUsuarioScreenState extends State<LoginUsuarioScreen> {
                 },
               ),
 
+              const SizedBox(height: 20),
+
               /// Campo contraseña
               CampoTextoPersonalizado(
                 label: 'CONTRASEÑA',
@@ -182,20 +209,36 @@ class _LoginUsuarioScreenState extends State<LoginUsuarioScreen> {
                 },
               ),
 
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: () => Navigator.pushNamed(context, AppRutas.olvidoPassword),
-                  child: const Text(
-                    '¿Olvidaste tu contraseña?',
-                    style: TextStyle(
-                      color: ColoresApp.textoSecundario,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Checkbox(
+                        value: _rememberMe,
+                        onChanged: (val) => setState(() => _rememberMe = val ?? false),
+                        activeColor: ColoresApp.rojoPrincipal,
+                      ),
+                      const Text(
+                        'Recordarme',
+                        style: TextStyle(color: ColoresApp.textoSecundario, fontSize: 13),
+                      ),
+                    ],
+                  ),
+                  TextButton(
+                    onPressed: () => Navigator.pushNamed(context, AppRutas.olvidoPassword),
+                    child: const Text(
+                      '¿Olvidaste tu contraseña?',
+                      style: TextStyle(
+                        color: ColoresApp.textoSecundario,
+                        fontSize: 13,
+                      ),
                     ),
                   ),
-                ),
+                ],
               ),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 16),
 
               /// Botón login
               SizedBox(

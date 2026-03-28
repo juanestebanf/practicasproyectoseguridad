@@ -4,6 +4,10 @@ import 'package:app_seguridadmx/features/users/presentacion/widgets/usuario_bott
 import 'package:app_seguridadmx/core/services/auth_service.dart';
 import 'package:app_seguridadmx/rutas/rutas_app.dart';
 import 'package:app_seguridadmx/core/services/user_service.dart';
+import 'package:app_seguridadmx/app/widgets/avatar_selection_dialog.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:convert';
+import 'dart:io';
 
 class PerfilUsuarioScreen extends StatefulWidget {
   const PerfilUsuarioScreen({super.key});
@@ -15,6 +19,7 @@ class PerfilUsuarioScreen extends StatefulWidget {
 class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen> {
   Map<String, dynamic>? _userData;
   bool _isLoading = true;
+  final ImagePicker _picker = ImagePicker();
 
   @override
   void initState() {
@@ -39,6 +44,109 @@ class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen> {
         );
       }
     }
+  }
+
+  Future<void> _cambiarFoto() async {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: ColoresApp.fondoInput,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (context) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            leading: const Icon(Icons.photo_camera, color: Colors.white),
+            title: const Text("Tomar Foto", style: TextStyle(color: Colors.white)),
+            onTap: () {
+              Navigator.pop(context);
+              _pickImage(ImageSource.camera);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.photo_library, color: Colors.white),
+            title: const Text("Seleccionar de Galería", style: TextStyle(color: Colors.white)),
+            onTap: () {
+              Navigator.pop(context);
+              _pickImage(ImageSource.gallery);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.face, color: Colors.white),
+            title: const Text("Seleccionar Avatar", style: TextStyle(color: Colors.white)),
+            onTap: () async {
+              Navigator.pop(context);
+              final result = await showDialog<String>(
+                context: context,
+                builder: (context) => const AvatarSelectionDialog(),
+              );
+              if (result != null) {
+                _updatePhoto(result);
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    final XFile? image = await _picker.pickImage(source: source, maxWidth: 300, maxHeight: 300, imageQuality: 70);
+    if (image != null) {
+      final bytes = await File(image.path).readAsBytes();
+      final base64Image = "data:image/png;base64,${base64Encode(bytes)}";
+      _updatePhoto(base64Image);
+    }
+  }
+
+  Future<void> _updatePhoto(String photoData) async {
+    setState(() => _isLoading = true);
+    try {
+      await UserService.updateProfile({'foto': photoData});
+      _loadUserProfile();
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+      }
+    }
+  }
+
+  Widget _buildAvatar() {
+    final String? photo = _userData?['foto'];
+    
+    if (photo == null || photo.isEmpty) {
+      return const CircleAvatar(
+        radius: 56,
+        backgroundColor: Colors.white12,
+        child: Icon(Icons.person, size: 50, color: Colors.white24),
+      );
+    }
+
+    if (photo.startsWith('data:image')) {
+      final base64Str = photo.split(',').last;
+      return CircleAvatar(
+        radius: 56,
+        backgroundImage: MemoryImage(base64Decode(base64Str)),
+      );
+    }
+
+    // Si es un código de icono (avatar de la selección)
+    if (int.tryParse(photo) != null) {
+      return CircleAvatar(
+        radius: 56,
+        backgroundColor: ColoresApp.rojoPrincipal.withOpacity(0.2),
+        child: Icon(
+          IconData(int.parse(photo), fontFamily: 'MaterialIcons'),
+          size: 50,
+          color: ColoresApp.rojoPrincipal,
+        ),
+      );
+    }
+
+    return CircleAvatar(
+      radius: 56,
+      backgroundImage: NetworkImage(photo),
+    );
   }
 
   @override
@@ -73,10 +181,7 @@ class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen> {
                     CircleAvatar(
                       radius: 60,
                       backgroundColor: accentRed,
-                      child: const CircleAvatar(
-                        radius: 56,
-                        backgroundImage: AssetImage('assets/user_photo.png'),
-                      ),
+                      child: _buildAvatar(),
                     ),
                     Positioned(
                       bottom: 0,
@@ -85,14 +190,15 @@ class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen> {
                         radius: 18,
                         backgroundColor: accentRed,
                         child: IconButton(
-                          icon: const Icon(Icons.edit, size: 18, color: Colors.white),
-                          onPressed: () {},
+                          icon: const Icon(Icons.camera_alt, size: 18, color: Colors.white),
+                          onPressed: _cambiarFoto,
                         ),
                       ),
                     ),
                   ],
                 ),
               ),
+              // Rest of the screen...
 
               const SizedBox(height: 15),
 

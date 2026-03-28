@@ -1,53 +1,127 @@
 import 'package:flutter/material.dart';
 import 'package:app_seguridadmx/app/tema/colors_app.dart';
+import 'package:app_seguridadmx/core/services/user_service.dart';
 
-class DatosPersonalesScreen extends StatelessWidget {
+class DatosPersonalesScreen extends StatefulWidget {
   const DatosPersonalesScreen({super.key});
 
   @override
+  State<DatosPersonalesScreen> createState() => _DatosPersonalesScreenState();
+}
+
+class _DatosPersonalesScreenState extends State<DatosPersonalesScreen> {
+  Map<String, dynamic>? _userData;
+  bool _isLoading = true;
+
+  final _nombreController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _telefonoController = TextEditingController();
+  final _sangreController = TextEditingController();
+  final _alergiasController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    try {
+      final data = await UserService.getProfile();
+      setState(() {
+        _userData = data;
+        _nombreController.text = data['nombre'] ?? '';
+        _emailController.text = data['email'] ?? '';
+        _telefonoController.text = data['telefono'] ?? '';
+        _sangreController.text = data['tipo_sangre'] ?? '';
+        _alergiasController.text = data['alergias'] ?? '';
+        _isLoading = false;
+      });
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _saveData() async {
+    setState(() => _isLoading = true);
+    try {
+      await UserService.updateProfile({
+        'nombre': _nombreController.text.trim(),
+        'email': _emailController.text.trim(),
+        'telefono': _telefonoController.text.trim(),
+        'tipo_sangre': _sangreController.text.trim(),
+        'alergias': _alergiasController.text.trim(),
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Datos actualizados correctamente'), backgroundColor: Colors.green),
+        );
+        _loadData();
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+        );
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    const backgroundDark = Color(0xFF0D0D0D);
-    const cardColor = Color(0xFF1A1A1A);
-    const accentRed = Color(0xFFE53935);
+    const backgroundDark = ColoresApp.fondoOscuro;
+    const accentRed = ColoresApp.rojoPrincipal;
+
+    if (_isLoading) {
+      return const Scaffold(
+        backgroundColor: backgroundDark,
+        body: Center(child: CircularProgressIndicator(color: accentRed)),
+      );
+    }
 
     return Scaffold(
       backgroundColor: backgroundDark,
       appBar: AppBar(
-      backgroundColor: backgroundDark,
-      elevation: 0,
-      // Cambia esta línea:
-      title: const Text(
-        "Datos Personales", 
-        style: TextStyle(
-          color: ColoresApp.textoBlanco, // <--- Uso de tu archivo de colores
-          fontWeight: FontWeight.bold
-        )
+        backgroundColor: backgroundDark,
+        elevation: 0,
+        title: const Text(
+          "Datos Personales", 
+          style: TextStyle(
+            color: ColoresApp.textoBlanco,
+            fontWeight: FontWeight.bold
+          )
+        ),
+        iconTheme: const IconThemeData(color: ColoresApp.textoBlanco),
       ),
-      iconTheme: const IconThemeData(color: ColoresApp.textoBlanco), // Para que la flecha de volver también sea blanca
-    ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _sectionTitle("INFORMACIÓN BÁSICA"),
-            _buildCustomTextField("Nombre completo", Icons.person_outline, "Juan Pérez"),
-            _buildCustomTextField("Cédula / ID", Icons.badge_outlined, "1104567890", enabled: false),
-            _buildCustomTextField("Correo electrónico", Icons.email_outlined, "juan.perez@email.com"),
-            _buildCustomTextField("Teléfono", Icons.phone_android_outlined, "+593 99 999 9999"),
+            _buildCustomTextField("Nombre completo", Icons.person_outline, _nombreController),
+            _buildCustomTextField("Cédula / ID", Icons.badge_outlined, TextEditingController(text: _userData?['cedula'] ?? ''), enabled: false),
+            _buildCustomTextField("Correo electrónico", Icons.email_outlined, _emailController),
+            _buildCustomTextField("Teléfono", Icons.phone_android_outlined, _telefonoController),
             
             const SizedBox(height: 25),
-            _sectionTitle("INFORMACIÓN MÉDICA (EMERGENCIAS)"),
-            _buildCustomTextField("Tipo de Sangre", Icons.bloodtype_outlined, "O+"),
-            _buildCustomTextField("Alergias / Notas", Icons.medical_services_outlined, "Ninguna conocida"),
+            _sectionTitle("INFORMACIÓN MÉDICA"),
+            _buildCustomTextField("Tipo de Sangre", Icons.bloodtype_outlined, _sangreController),
+            _buildCustomTextField("Alergias / Notas", Icons.medical_services_outlined, _alergiasController),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: accentRed,
-        onPressed: () {},
-        icon: const Icon(Icons.save),
-        label: const Text("Guardar Cambios"),
+        onPressed: _isLoading ? null : _saveData,
+        icon: const Icon(Icons.save, color: Colors.white),
+        label: const Text("Guardar Cambios", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
       ),
     );
   }
@@ -59,22 +133,22 @@ class DatosPersonalesScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCustomTextField(String label, IconData icon, String initialValue, {bool enabled = true}) {
+  Widget _buildCustomTextField(String label, IconData icon, TextEditingController controller, {bool enabled = true}) {
     return Container(
       margin: const EdgeInsets.only(bottom: 15),
-      decoration: BoxDecoration(color: const Color(0xFF1A1A1A), borderRadius: BorderRadius.circular(15)),
+      decoration: BoxDecoration(color: ColoresApp.fondoInput, borderRadius: BorderRadius.circular(15)),
       child: TextFormField(
-        initialValue: initialValue,
+        controller: controller,
         enabled: enabled,
         style: TextStyle(color: enabled ? Colors.white : Colors.grey),
         decoration: InputDecoration(
           labelText: label,
           labelStyle: const TextStyle(color: Colors.grey),
-          prefixIcon: Icon(icon, color: const Color(0xFFE53935)),
+          prefixIcon: Icon(icon, color: ColoresApp.rojoPrincipal),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
         ),
       ),
     );
   }
-}
+}

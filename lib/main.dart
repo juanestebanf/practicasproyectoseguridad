@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:app_seguridadmx/rutas/rutas_app.dart';
 import 'package:app_seguridadmx/app/tema/colors_app.dart';
 
+// CORE
+import 'package:app_seguridadmx/core/services/auth_service.dart';
+
 // AUTH
 import 'package:app_seguridadmx/features/auth/presentacion/screens/pantalla_bienvenida.dart';
 import 'package:app_seguridadmx/features/auth/presentacion/screens/pantalla_registro.dart';
@@ -36,7 +39,23 @@ import 'package:app_seguridadmx/core/services/socket_service.dart';
 import 'package:app_seguridadmx/features/auth/presentacion/screens/pantalla_olvido_password.dart';
 import 'package:app_seguridadmx/features/auth/presentacion/screens/pantalla_restablecer_password.dart';
 
+import 'dart:ui';
+
 void main() {
+  // Capturar errores de Flutter (errores de widgets/framework)
+  FlutterError.onError = (FlutterErrorDetails details) {
+    FlutterError.presentError(details);
+    debugPrint("🚨 [FLUTTER ERROR]: ${details.exception}");
+    debugPrint("🚨 [STACK TRACE]: ${details.stack}");
+  };
+
+  // Capturar errores de la plataforma (errores asíncronos fuera de Flutter)
+  PlatformDispatcher.instance.onError = (error, stack) {
+    debugPrint("🚨 [PLATFORM ERROR]: $error");
+    debugPrint("🚨 [STACK TRACE]: $stack");
+    return true; // Indicar que el error ha sido manejado
+  };
+
   WidgetsFlutterBinding.ensureInitialized();
   
   // INICIALIZAR SOCKETS
@@ -45,13 +64,55 @@ void main() {
   runApp(const MiApp());
 }
 
-class MiApp extends StatelessWidget {
+class MiApp extends StatefulWidget {
   const MiApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  State<MiApp> createState() => _MiAppState();
+}
 
+class _MiAppState extends State<MiApp> {
+  String _initialRoute = AppRutas.bienvenida;
+  bool _checkingSession = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkSession();
+  }
+
+  Future<void> _checkSession() async {
+    final loggedIn = await AuthService.isLoggedIn();
+    if (loggedIn) {
+      final rol = await AuthService.getUserRol();
+      setState(() {
+        switch (rol) {
+          case "admin":
+            _initialRoute = AppRutas.homeAdmin;
+            break;
+          case "vigilante":
+          case "operador":
+            _initialRoute = AppRutas.homeVigilante;
+            break;
+          case "user":
+            _initialRoute = AppRutas.homeUsuario;
+            break;
+          default:
+            _initialRoute = AppRutas.bienvenida;
+        }
+        _checkingSession = false;
+      });
+    } else {
+      setState(() {
+        _checkingSession = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return MaterialApp(
+      key: ValueKey(_checkingSession), // Forzar reconstrucción limpia al cambiar de estado
       debugShowCheckedModeBanner: false,
       title: 'SEGURIDAD',
       themeMode: ThemeMode.dark,
@@ -73,13 +134,13 @@ class MiApp extends StatelessWidget {
         ),
 
         // Estilo de Texto Global
-        textTheme: TextTheme(
-          displayLarge: const TextStyle(color: ColoresApp.textoBlanco, fontWeight: FontWeight.bold),
-          bodyLarge: const TextStyle(color: ColoresApp.textoBlanco),
-          bodyMedium: const TextStyle(color: ColoresApp.textoSecundario),
+        textTheme: const TextTheme(
+          displayLarge: TextStyle(color: ColoresApp.textoBlanco, fontWeight: FontWeight.bold),
+          bodyLarge: TextStyle(color: ColoresApp.textoBlanco),
+          bodyMedium: TextStyle(color: ColoresApp.textoSecundario),
         ),
 
-        // ESTILO DE BOTONES GLOBAL (Para evitar el Azul por defecto)
+        // ESTILO DE BOTONES GLOBAL
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
             backgroundColor: ColoresApp.rojoPrincipal,
@@ -105,19 +166,12 @@ class MiApp extends StatelessWidget {
           ),
         ),
 
-        // Estilo de Inputs (TextFields)
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
           fillColor: ColoresApp.fondoInput,
-          labelStyle: const TextStyle(color: ColoresApp.textoSecundario),
-          prefixIconColor: ColoresApp.rojoPrincipal,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
             borderSide: BorderSide.none,
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: const BorderSide(color: Colors.white10),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
@@ -125,7 +179,6 @@ class MiApp extends StatelessWidget {
           ),
         ),
 
-        // Estilo de Diálogos
         dialogTheme: DialogThemeData(
           backgroundColor: ColoresApp.fondoInput,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
@@ -141,9 +194,18 @@ class MiApp extends StatelessWidget {
         ),
       ),
       
-      initialRoute: AppRutas.bienvenida,
+      // Mostrar pantalla de carga o la ruta inicial
+      home: _checkingSession 
+        ? const Scaffold(
+            backgroundColor: ColoresApp.fondoOscuro,
+            body: Center(child: CircularProgressIndicator(color: ColoresApp.rojoPrincipal)),
+          )
+        : null,
+
+      initialRoute: _checkingSession ? null : _initialRoute,
 
       onGenerateRoute: (settings) {
+        if (_checkingSession) return null;
 
         switch (settings.name) {
 
@@ -188,12 +250,12 @@ class MiApp extends StatelessWidget {
 
           case AppRutas.seleccionarContactos:
             return MaterialPageRoute(
-              builder: (_) => SeleccionarContactosScreen(),
+              builder: (_) => const SeleccionarContactosScreen(),
             );
 
           case AppRutas.mapa:
             return MaterialPageRoute(
-              builder: (_) => MapaScreen(),
+              builder: (_) => const MapaScreen(),
             );
 
           case AppRutas.perfil:
@@ -213,12 +275,12 @@ class MiApp extends StatelessWidget {
 
           case AppRutas.gestionarContactos:
             return MaterialPageRoute(
-              builder: (_) => GestionarContactosScreen(),
+              builder: (_) => const GestionarContactosScreen(),
             );
 
           case AppRutas.historialAlarmas:
             return MaterialPageRoute(
-              builder: (_) => HistorialAlarmasScreen(),
+              builder: (_) => const HistorialAlarmasScreen(),
             );
 
           case AppRutas.preferenciasNotificacion:
@@ -228,7 +290,7 @@ class MiApp extends StatelessWidget {
 
           case AppRutas.notificaciones:
             return MaterialPageRoute(
-              builder: (_) => NotificacionesScreen(),
+              builder: (_) => const NotificacionesScreen(),
             );
 
           /// ALERTA CERCANA

@@ -39,7 +39,8 @@ class _RegistroUsuarioScreenState extends State<RegistroUsuarioScreen> {
   }
 
   Future<void> _registrar() async {
-    if (!_formKey.currentState!.validate()) return;
+    final currentState = _formKey.currentState;
+    if (currentState == null || !currentState.validate()) return;
     if (!_aceptaTerminos) {
       CustomSnackbar.showError(context, "Debe aceptar los términos y condiciones");
       return;
@@ -114,7 +115,7 @@ class _RegistroUsuarioScreenState extends State<RegistroUsuarioScreen> {
                 icono: Icons.person_outline,
                 controller: _nombreController,
                 validator: (value) =>
-                    value!.isEmpty ? 'Ingrese su nombre' : null,
+                    (value ?? '').isEmpty ? 'Ingrese su nombre' : null,
               ),
 
               CampoTextoPersonalizado(
@@ -197,7 +198,7 @@ class _RegistroUsuarioScreenState extends State<RegistroUsuarioScreen> {
                   Checkbox(
                     value: _aceptaTerminos,
                     onChanged: (val) =>
-                        setState(() => _aceptaTerminos = val!),
+                        setState(() => _aceptaTerminos = val ?? false),
                     activeColor: ColoresApp.rojoPrincipal,
                   ),
                   const Expanded(
