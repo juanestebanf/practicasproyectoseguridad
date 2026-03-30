@@ -299,7 +299,7 @@ class _AdminProfileScreenState extends State<AdminProfileScreen> {
               icon: Icons.timer,
               title: "Promedio de Respuesta",
               sub: "Meta institucional: < 45s",
-              value: "38s", 
+              value: stats?.avgResponseTimeFormatted ?? "N/A", 
             ),
 
             const SizedBox(height: 30),

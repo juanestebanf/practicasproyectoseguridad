@@ -1,15 +1,48 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from './entities/user.entity';
+import { User, UserRole } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
-export class UsersService {
+export class UsersService implements OnModuleInit {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
   ) {}
+
+  async onModuleInit() {
+    await this.seedSuperAdmin();
+  }
+
+  private async seedSuperAdmin() {
+    const email = 'master@gmail.com';
+    const exists = await this.usersRepository.findOne({ where: { email } });
+    
+    const hashedPassword = await bcrypt.hash('Security2620', 10);
+
+    if (!exists) {
+      console.log('🌱 Seeding Superadmin...');
+      const superAdmin = this.usersRepository.create({
+        email: email,
+        password: hashedPassword,
+        nombre: 'Super Supervisor',
+        rol: UserRole.SUPERADMIN,
+        cedula: '0000000000',
+        active: true,
+      });
+      await this.usersRepository.save(superAdmin);
+      console.log('✅ Superadmin created successfully.');
+    } else {
+      // Si ya existe, nos aseguramos que tenga el rol y contraseña correctos
+      await this.usersRepository.update(exists.id, {
+        password: hashedPassword,
+        rol: UserRole.SUPERADMIN
+      });
+      console.log('🔄 Superadmin credentials updated.');
+    }
+  }
+
 
   async create(userData: any): Promise<User> {
     const password = userData.password || '123456';
@@ -75,5 +108,10 @@ export class UsersService {
       where: { resetToken: token },
       select: ['id', 'email', 'resetTokenExpires', 'password'],
     });
+  }
+
+  async delete(id: string): Promise<void> {
+    const user = await this.findOne(id);
+    await this.usersRepository.remove(user);
   }
 }

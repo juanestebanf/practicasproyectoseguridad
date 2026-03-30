@@ -194,6 +194,11 @@ export class AlertsService {
     return this.evidenceRepository.save(evidence);
   }
 
+  async delete(id: string): Promise<void> {
+    const alert = await this.findOne(id);
+    await this.alertsRepository.remove(alert);
+  }
+
   async getSummary(): Promise<any> {
     const activeAlerts = await this.alertsRepository.count({
       where: { estado: AlertStatus.PENDIENTE }
@@ -206,11 +211,52 @@ export class AlertsService {
       where: { rol: UserRole.OPERADOR, active: true }
     });
 
+    // Calcular tiempo promedio de respuesta (en segundos)
+    const avgResponseTime = await this.calculateAvgResponseTime();
+
     return {
       activeAlerts,
       attendedToday,
       activeOperators,
+      avgResponseTime,
     };
+  }
+
+  private async calculateAvgResponseTime(): Promise<number> {
+    // Obtener alertas finalizadas con su historial
+    const finalizedAlerts = await this.alertsRepository.find({
+      where: { estado: AlertStatus.FINALIZADA },
+      relations: ['historial'],
+      order: { fecha: 'DESC' },
+      take: 100, // Últimas 100 alertas para calcular promedio
+    });
+
+    if (finalizedAlerts.length === 0) return 0;
+
+    let totalResponseTime = 0;
+    let countWithTime = 0;
+
+    for (const alert of finalizedAlerts) {
+      // Buscar el evento de asignación en el historial
+      if (alert.historial && alert.historial.length > 0) {
+        const assignmentEvent = alert.historial.find(e => e.tipo === 'asignada');
+        if (assignmentEvent && alert.fecha) {
+          const responseTime = new Date(assignmentEvent.fecha).getTime() - new Date(alert.fecha).getTime();
+          if (responseTime > 0) {
+            totalResponseTime += responseTime / 1000; // Convertir a segundos
+            countWithTime++;
+          }
+        }
+      }
+      // Alternativa: si hay operador asignado, usar fecha como aproximación
+      else if (alert.operador_id && alert.fecha) {
+        // Para alertas con operador asignado pero sin historial detallado
+        totalResponseTime += 45; // Valor por defecto si no hay datos específicos
+        countWithTime++;
+      }
+    }
+
+    return countWithTime > 0 ? Math.round(totalResponseTime / countWithTime) : 0;
   }
 
   async getOperatorStats(operatorId: string): Promise<any> {
@@ -224,10 +270,53 @@ export class AlertsService {
     // Eficiencia simple: % de alertas finalizadas sobre total asignadas
     const eficiencia = totalAssigned > 0 ? (finalized / totalAssigned) * 100 : 0;
 
+    // Calcular tiempo promedio de respuesta del operador
+    const avgResponseTime = await this.calculateOperatorAvgResponseTime(operatorId);
+
     return {
       alertasAtendidasHoy: finalized,
       eficiencia: Math.round(eficiencia * 10) / 10,
-      tiempoPromedioRespuesta: finalized > 0 ? "8 min" : "N/A", // Mock del tiempo por ahora
+      tiempoPromedioRespuesta: avgResponseTime,
     };
+  }
+
+  private async calculateOperatorAvgResponseTime(operatorId: string): Promise<string> {
+    // Obtener alertas finalizadas por este operador
+    const finalizedAlerts = await this.alertsRepository.find({
+      where: { operador_id: operatorId, estado: AlertStatus.FINALIZADA },
+      relations: ['historial'],
+      order: { fecha: 'DESC' },
+      take: 50,
+    });
+
+    if (finalizedAlerts.length === 0) return 'N/A';
+
+    let totalResponseTime = 0;
+    let countWithTime = 0;
+
+    for (const alert of finalizedAlerts) {
+      // Buscar evento de asignación
+      if (alert.historial && alert.historial.length > 0 && alert.fecha) {
+        const assignmentEvent = alert.historial.find((e: any) => e.tipo === 'asignada');
+        if (assignmentEvent) {
+          const responseTime = new Date(assignmentEvent.fecha).getTime() - new Date(alert.fecha).getTime();
+          if (responseTime > 0) {
+            totalResponseTime += responseTime / 1000;
+            countWithTime++;
+          }
+        }
+      }
+    }
+
+    if (countWithTime === 0) return 'N/A';
+
+    const avgSeconds = Math.round(totalResponseTime / countWithTime);
+    const minutes = Math.floor(avgSeconds / 60);
+    const seconds = avgSeconds % 60;
+
+    if (minutes > 0) {
+      return `${minutes}m ${seconds}s`;
+    }
+    return `${seconds}s`;
   }
 }

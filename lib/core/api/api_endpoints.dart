@@ -17,6 +17,7 @@ class ApiEndpoints {
   static const String assignedAlerts = '/alerts/assigned';
   static const String activeAlerts = '/alerts/active';
   static const String pendingApproval = '/alerts/pending-approval';
+  static const String myStats = '/alerts/my-stats';
   
   // Contacts
   static const String contacts = '/contacts';

@@ -1,13 +1,15 @@
 class OperatorModel {
   final String id;
-  String nombre;
-  String telefono;
+  final String nombre;
+  final String telefono;
   bool activo;
+  final String? rol;
 
   OperatorModel({
     required this.id,
     required this.nombre,
     required this.telefono,
     required this.activo,
+    this.rol,
   });
 }

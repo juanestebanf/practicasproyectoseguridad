@@ -87,6 +87,7 @@ class _MiAppState extends State<MiApp> {
       final rol = await AuthService.getUserRol();
       setState(() {
         switch (rol) {
+          case "superadmin":
           case "admin":
             _initialRoute = AppRutas.homeAdmin;
             break;

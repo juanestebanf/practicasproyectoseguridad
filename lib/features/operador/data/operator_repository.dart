@@ -20,19 +20,18 @@ class OperatorRepository {
       final userData = profileRes.data;
       final userId = userData['id'].toString();
       
-      // Obtener estadísticas reales del operador
+      // Obtener estadísticas reales del operador desde el endpoint específico
       int attendedToday = 0;
-      double eficiencia = 0.0;
+      double eficiencia = 100.0;
       String tiempoResp = "N/A";
 
       try {
-        final statsRes = await _apiClient.dio.get('${ApiEndpoints.alerts}/summary');
-        // El backend tiene un getOperatorStats(id), pero el controller no lo expone directamente individualmente?
-        // Revisando el controller, no hay un GET /alerts/stats/:id. 
-        // Usaremos el summary general o el admin summary por ahora modificado.
-        attendedToday = statsRes.data['attendedToday'] ?? 0;
+        final statsRes = await _apiClient.dio.get(ApiEndpoints.myStats);
+        attendedToday = statsRes.data['alertasAtendidasHoy'] ?? 0;
+        eficiencia = (statsRes.data['eficiencia'] ?? 100.0).toDouble();
+        tiempoResp = statsRes.data['tiempoPromedioRespuesta'] ?? 'N/A';
       } catch (e) {
-        print("Error cargando estadísticas: $e");
+        print("Error cargando estadísticas del operador: $e");
       }
 
       return OperatorModel(
@@ -42,8 +41,8 @@ class OperatorRepository {
         foto: userData['foto'],
         estadisticas: OperatorStats(
           alertasAtendidasHoy: attendedToday,
-          eficiencia: eficiencia > 0 ? eficiencia : 100.0, // Fallback professional
-          tiempoPromedioRespuesta: "8 min", // Backend mock value
+          eficiencia: eficiencia,
+          tiempoPromedioRespuesta: tiempoResp,
         ),
       );
     } catch (e) {

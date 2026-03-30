@@ -71,6 +71,7 @@ class _LoginUsuarioScreenState extends State<LoginUsuarioScreen> {
       if (!mounted) return;
 
       switch (rol) {
+        case "superadmin":
         case "admin":
           Navigator.pushReplacementNamed(context, AppRutas.homeAdmin);
           break;

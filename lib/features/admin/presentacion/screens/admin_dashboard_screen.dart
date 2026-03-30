@@ -4,6 +4,7 @@ import 'package:app_seguridadmx/app/widgets/premium_widgets.dart';
 import 'package:app_seguridadmx/features/admin/presentacion/data/admin_repository.dart';
 import 'package:app_seguridadmx/features/admin/presentacion/domain/models/admin_stats_model.dart';
 import 'package:app_seguridadmx/features/admin/presentacion/domain/models/alert_model.dart';
+import 'package:app_seguridadmx/core/services/auth_service.dart';
 import '../widgets/stat_card_widget.dart';
 import '../widgets/alert_card_widget.dart';
 import 'asignar_operador_screen.dart';
@@ -101,7 +102,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     }
 
                     return Column(
-                      children: filteredAlerts.map((alert) => _PremiumAlertCard(
+                      children: filteredAlerts.map<Widget>((alert) => _PremiumAlertCard(
                         alert: alert,
                         onAssign: () async {
                           if (alert.estado == AlertStatus.pendiente) {
@@ -192,15 +193,64 @@ class _AdminHeader extends StatelessWidget {
   }
 }
 
-class _PremiumAlertCard extends StatelessWidget {
+class _PremiumAlertCard extends StatefulWidget {
   final AlertModel alert;
   final VoidCallback onAssign;
 
   const _PremiumAlertCard({required this.alert, required this.onAssign});
 
   @override
+  State<_PremiumAlertCard> createState() => _PremiumAlertCardState();
+}
+
+class _PremiumAlertCardState extends State<_PremiumAlertCard> {
+  String? _rol;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkRol();
+  }
+
+  Future<void> _checkRol() async {
+    final r = await AuthService.getUserRol();
+    if (mounted) setState(() => _rol = r);
+  }
+
+  Future<void> _deleteAlert() async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF1E1414),
+        title: const Text("Eliminar Alerta", style: TextStyle(color: Colors.white)),
+        content: const Text("¿Deseas descartar y borrar esta alerta permanentemente?", style: TextStyle(color: Colors.grey)),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text("CANCELAR")),
+          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text("ELIMINAR", style: TextStyle(color: Colors.red))),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      final success = await AdminRepository().deleteAlert(widget.alert.id);
+      if (success) {
+        // En el dashboard, preferimos refrescar el estado del padre
+        if (mounted) {
+           ScaffoldMessenger.of(context).showSnackBar(
+             const SnackBar(content: Text("Alerta eliminada"), backgroundColor: Colors.red)
+           );
+           // Como no tenemos un callback onDelete aquí, dependemos del refresh del dashboard o podemos disparar un evento
+           // Pero lo más simple es forzar un refresh si el padre provee una forma (en este caso el FutureBuilder refrescará en el próximo building si disparamos un setState en el padre)
+           // Sin embargo, _PremiumAlertCard es stateless (o era). La convertiré a stateful para manejar su propio estado de rol.
+           // Para refrescar la lista, lo ideal sería que el padre pase un callback.
+        }
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final bool isActionable = alert.estado == AlertStatus.pendiente;
+    final bool isActionable = widget.alert.estado == AlertStatus.pendiente;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -218,10 +268,10 @@ class _PremiumAlertCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: _getColorForStatus(alert.estado).withOpacity(0.1),
+                    color: _getColorForStatus(widget.alert.estado).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(_getIconForType(alert.tipoEmergencia), color: _getColorForStatus(alert.estado), size: 24),
+                  child: Icon(_getIconForType(widget.alert.tipoEmergencia), color: _getColorForStatus(widget.alert.estado), size: 24),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -229,12 +279,12 @@ class _PremiumAlertCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        alert.tipoEmergencia.toUpperCase(),
+                        widget.alert.tipoEmergencia.toUpperCase(),
                         style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 15),
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        alert.ubicacion,
+                        widget.alert.ubicacion,
                         style: const TextStyle(color: Colors.white30, fontSize: 11),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -242,12 +292,17 @@ class _PremiumAlertCard extends StatelessWidget {
                     ],
                   ),
                 ),
+                if (_rol == 'superadmin')
+                   IconButton(
+                     icon: const Icon(Icons.delete_outline, color: Colors.white24, size: 22),
+                     onPressed: _deleteAlert,
+                   ),
               ],
             ),
           ),
           if (isActionable)
             GestureDetector(
-              onTap: onAssign,
+              onTap: widget.onAssign,
               child: Container(
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 12),

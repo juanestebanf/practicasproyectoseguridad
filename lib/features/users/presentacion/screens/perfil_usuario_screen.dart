@@ -224,7 +224,7 @@ class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen> {
                   border: Border.all(color: accentRed.withOpacity(0.4)),
                 ),
                 child: Text(
-                  "DNI/CÉDULA: $cedula",
+                  _userData?['rol'] == 'superadmin' ? "ACCESO TOTAL / SUPERADMIN" : "DNI/CÉDULA: $cedula",
                   style: const TextStyle(
                       color: accentRed, fontWeight: FontWeight.bold, fontSize: 11),
                 ),

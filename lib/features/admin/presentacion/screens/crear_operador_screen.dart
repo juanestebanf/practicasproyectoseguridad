@@ -155,6 +155,35 @@ class _CrearOperadorScreenState extends State<CrearOperadorScreen> {
                   },
                 ),
 
+                const SizedBox(height: 20),
+
+                const Text(
+                  "ROL DEL USUARIO",
+                  style: TextStyle(
+                    color: ColoresApp.textoSecundario, 
+                    fontWeight: FontWeight.bold, 
+                    fontSize: 11, 
+                    letterSpacing: 2.0
+                  ),
+                ),
+                const SizedBox(height: 10),
+
+                DropdownButtonFormField<String>(
+                  value: selectedRol,
+                  dropdownColor: ColoresApp.fondoInput,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: _buildInputDecoration("Seleccionar Rol", Icons.admin_panel_settings_outlined),
+                  items: const [
+                    DropdownMenuItem(value: "user", child: Text("CIUDADANO")),
+                    DropdownMenuItem(value: "operador", child: Text("OPERADOR")),
+                    DropdownMenuItem(value: "admin", child: Text("ADMINISTRADOR")),
+                    DropdownMenuItem(value: "superadmin", child: Text("SUPERADMIN")),
+                  ],
+                  onChanged: (val) {
+                    if (val != null) setState(() => selectedRol = val);
+                  },
+                ),
+
                 const SizedBox(height: 40),
 
                 SizedBox(
@@ -177,10 +206,10 @@ class _CrearOperadorScreenState extends State<CrearOperadorScreen> {
                             email: emailController.text,
                             telefono: telefonoController.text,
                             password: passwordController.text,
-                            rol: "operador",
+                            rol: selectedRol, // Usar el seleccionado
                           );
                           if (exito && context.mounted) {
-                            CustomSnackbar.showSuccess(context, "Operador dado de alta exitosamente");
+                            CustomSnackbar.showSuccess(context, "Usuario dado de alta exitosamente");
                             Navigator.pop(context);
                           }
                         } catch (e) {
@@ -197,7 +226,7 @@ class _CrearOperadorScreenState extends State<CrearOperadorScreen> {
                           child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)
                         )
                       : const Text(
-                          "CREAR OPERADOR", 
+                          "CREAR USUARIO", 
                           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15, letterSpacing: 1.1)
                         ),
                   ),

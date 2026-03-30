@@ -3,6 +3,7 @@ import { Alert } from '../../alerts/entities/alert.entity';
 import { Contact } from '../../contacts/entities/contact.entity';
 
 export enum UserRole {
+  SUPERADMIN = 'superadmin',
   ADMIN = 'admin',
   OPERADOR = 'operador',
   USER = 'user',
@@ -49,6 +50,12 @@ export class User {
 
   @Column({ nullable: true })
   foto: string;
+
+  @Column({ name: 'tipo_sangre', nullable: true })
+  tipoSangre: string;
+
+  @Column({ type: 'text', nullable: true })
+  alergias: string;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

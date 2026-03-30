@@ -1,10 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, UseGuards, Request, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { AlertsService } from './alerts.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { UserRole } from '../users/entities/user.entity';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { RolesGuard } from '../auth/guards/roles.guard';
 
 @ApiTags('alerts')
 @ApiBearerAuth()
@@ -125,5 +128,18 @@ export class AlertsController {
   @Get('summary')
   async getSummary() {
     return this.alertsService.getSummary();
+  }
+
+  @ApiOperation({ summary: 'Estadísticas del operador logueado' })
+  @Get('my-stats')
+  async getMyStats(@Request() req) {
+    return this.alertsService.getOperatorStats(req.user.userId);
+  }
+
+  @ApiOperation({ summary: 'Eliminar alerta (Admin/Superadmin)' })
+  @Roles(UserRole.ADMIN)
+  @Delete(':id')
+  async deleteAlert(@Param('id') id: string) {
+    return this.alertsService.delete(id);
   }
 }

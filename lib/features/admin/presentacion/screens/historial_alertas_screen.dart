@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:app_seguridadmx/app/tema/colors_app.dart';
 import 'package:app_seguridadmx/app/widgets/premium_widgets.dart';
 import 'package:app_seguridadmx/features/admin/presentacion/data/admin_repository.dart';
+import 'package:app_seguridadmx/core/services/auth_service.dart';
 import '../domain/models/alert_model.dart';
 import 'alert_detail_screen.dart';
 
@@ -114,9 +115,12 @@ class _HistorialAlertasScreenState extends State<HistorialAlertasScreen> {
                     physics: const BouncingScrollPhysics(),
                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                     itemCount: _filteredAlerts.length,
-                    itemBuilder: (context, index) {
-                      return _AlertHistoryCard(alert: _filteredAlerts[index]);
-                    },
+                        itemBuilder: (context, index) {
+                          return _AlertHistoryCard(
+                            alert: _filteredAlerts[index],
+                            onDelete: () => _loadAlerts(),
+                          );
+                        },
                   ),
           ),
         ],
@@ -148,14 +152,55 @@ class _HistorialAlertasScreenState extends State<HistorialAlertasScreen> {
   }
 }
 
-class _AlertHistoryCard extends StatelessWidget {
+class _AlertHistoryCard extends StatefulWidget {
   final AlertModel alert;
-  const _AlertHistoryCard({required this.alert});
+  final VoidCallback onDelete;
+  const _AlertHistoryCard({required this.alert, required this.onDelete});
+
+  @override
+  State<_AlertHistoryCard> createState() => _AlertHistoryCardState();
+}
+
+class _AlertHistoryCardState extends State<_AlertHistoryCard> {
+  String? _rol;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkRol();
+  }
+
+  Future<void> _checkRol() async {
+    final r = await AuthService.getUserRol();
+    if (mounted) setState(() => _rol = r);
+  }
+
+  Future<void> _deleteAlert() async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF1E1414),
+        title: const Text("Eliminar Alerta", style: TextStyle(color: Colors.white)),
+        content: const Text("¿Deseas eliminar este registro histório?", style: TextStyle(color: Colors.grey)),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text("CANCELAR")),
+          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text("ELIMINAR", style: TextStyle(color: Colors.red))),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      final success = await AdminRepository().deleteAlert(widget.alert.id);
+      if (success) {
+        widget.onDelete();
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final String dia = DateFormat('dd').format(alert.fechaCreacion);
-    final String mes = DateFormat('MMM').format(alert.fechaCreacion).toUpperCase();
+    final String dia = DateFormat('dd').format(widget.alert.fechaCreacion);
+    final String mes = DateFormat('MMM').format(widget.alert.fechaCreacion).toUpperCase();
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -169,7 +214,7 @@ class _AlertHistoryCard extends StatelessWidget {
         child: Material(
           color: Colors.transparent,
           child: InkWell(
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => AlertDetailScreen(alert: alert))),
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => AlertDetailScreen(alert: widget.alert))),
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Row(
@@ -203,7 +248,7 @@ class _AlertHistoryCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          alert.tipoEmergencia.toUpperCase(),
+                          widget.alert.tipoEmergencia.toUpperCase(),
                           style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 15, letterSpacing: 0.5),
                         ),
                         const SizedBox(height: 4),
@@ -213,7 +258,7 @@ class _AlertHistoryCard extends StatelessWidget {
                             const SizedBox(width: 4),
                             Expanded(
                               child: Text(
-                                alert.ubicacion,
+                                widget.alert.ubicacion,
                                 style: const TextStyle(color: Colors.white30, fontSize: 11),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
@@ -238,7 +283,13 @@ class _AlertHistoryCard extends StatelessWidget {
                   ),
 
                   /// 🔘 ACCION
-                  const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white10, size: 16),
+                  if (_rol == 'superadmin')
+                    IconButton(
+                      icon: const Icon(Icons.delete_outline, color: Colors.white24, size: 20),
+                      onPressed: _deleteAlert,
+                    )
+                  else
+                    const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white10, size: 16),
                 ],
               ),
             ),

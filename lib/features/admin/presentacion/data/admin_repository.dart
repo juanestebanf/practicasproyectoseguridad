@@ -83,9 +83,10 @@ class AdminRepository {
         activeOperators: data['activeOperators'] ?? 0,
         attendedToday: data['attendedToday'] ?? 0,
         activeAlerts: data['activeAlerts'] ?? 0,
+        avgResponseTime: data['avgResponseTime'] ?? 0,
       );
     } catch (e) {
-      return AdminStatsModel(activeOperators: 0, attendedToday: 0, activeAlerts: 0);
+      return AdminStatsModel(activeOperators: 0, attendedToday: 0, activeAlerts: 0, avgResponseTime: 0);
     }
   }
 
@@ -116,6 +117,54 @@ class AdminRepository {
       await _apiClient.dio.patch('/users/$operatorId', data: {'active': !currentStatus});
       return true;
     } catch(e) {
+      return false;
+    }
+  }
+
+  // 🔹 ELIMINAR CUALQUIER USUARIO (Admin/Superadmin)
+  Future<bool> deleteUser(String userId) async {
+    try {
+      await _apiClient.dio.delete('/users/$userId');
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // 🔹 EDITAR ROL O CUALQUIER DATO DE USUARIO
+  Future<bool> updateUser(String userId, Map<String, dynamic> data) async {
+    try {
+      await _apiClient.dio.patch('/users/$userId', data: data);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // 🔹 OBTENER USUARIOS GENÉRICO
+  Future<List<OperatorModel>> getAnyUsers(String? rol) async {
+    try {
+      final query = rol != null && rol != 'todos' ? '?rol=$rol' : '';
+      final response = await _apiClient.dio.get('/users$query');
+      final List data = response.data;
+      return data.map((json) => OperatorModel(
+        id: json['id'],
+        nombre: json['nombre'],
+        telefono: json['telefono'] ?? 'N/A',
+        activo: json['active'] ?? true,
+        rol: json['rol'], 
+      )).toList();
+    } catch (e) {
+      return [];
+    }
+  }
+
+  // 🔹 ELIMINAR ALERTA (Admin/Superadmin)
+  Future<bool> deleteAlert(String alertId) async {
+    try {
+      await _apiClient.dio.delete('/alerts/$alertId');
+      return true;
+    } catch (e) {
       return false;
     }
   }

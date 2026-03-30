@@ -75,9 +75,13 @@ class _MapaScreenState extends State<MapaScreen> {
 
       if (permission == LocationPermission.whileInUse || permission == LocationPermission.always) {
         final position = await Geolocator.getCurrentPosition();
+        setState(() {
+          lat = position.latitude;
+          lng = position.longitude;
+        });
         _mapController?.animateCamera(
           CameraUpdate.newLatLngZoom(
-            LatLng(position.latitude, position.longitude),
+            LatLng(lat, lng),
             16,
           ),
         );

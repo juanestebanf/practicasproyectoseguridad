@@ -16,6 +16,12 @@ migrate_working_dir/
 node_modules/
 dist/
 .env
+.prettierrc
+check_db.js
+init.sql
+eslint.config.js
+nest-cli.json
+test_finalize.js
 
 # IntelliJ related
 *.iml
